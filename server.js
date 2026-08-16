@@ -6,17 +6,17 @@ const path = require('path');
 
 const app = express();
 
-// 1. Middlewares para procesar JSON y datos de formularios
+// 1. Middlewares para leer datos
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// 2. Configurar la conexión a PostgreSQL
+// 2. Base de datos con SSL habilitado
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false }
 });
 
-// 3. Middlewares de Sesión (DEBE IR ANTES DE CUALQUIER RUTA O SUBIDA DE ARCHIVOS)
+// 3. CONFIGURACIÓN DE SESIONES (OBLIGATORIO QUE VAYA AQUÍ, ANTES DE LAS RUTAS)
 app.use(session({
     store: new pgSession({
         pool: pool,
@@ -25,19 +25,16 @@ app.use(session({
     secret: process.env.SESSION_SECRET || 'secretodefault',
     resave: false,
     saveUninitialized: false,
-    cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 } // 30 días
+    cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 }
 }));
 
-// 4. Servir archivos estáticos
+// 4. Archivos estáticos
 app.use(express.static(path.join(__dirname, 'public')));
 
-// 5. Rutas (AQUÍ ES DONDE USAS req.session)
+// 5. RUTAS (Usar el operador ?. para evitar fallos si req.session fuera undefined)
 app.get('/', (req, res) => {
-    // Se añade optinal chaining (?.) para evitar que rompa si no existe la sesión
     if (!req.session?.userId) {
         return res.redirect('/login.html');
     }
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
-
-// Resto de tus rutas API (/login, /eventos, etc.)
