@@ -17,6 +17,14 @@ const pool = new Pool({
 
 app.use(express.json());
 
+// Servir la raíz del sitio
+app.get('/', (req, res) => {
+    if (!req.session.userId) {
+        return res.redirect('/login.html');
+    }
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 // Configuración de Sesiones en PostgreSQL
 app.use(session({
     store: new pgSession({
