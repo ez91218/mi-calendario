@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Calendario</title>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .header-acciones {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .btn-logout {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        .btn-logout:hover {
+            background-color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Mi Calendario</h2>
+            <div class="header-acciones">
+                <button id="btn-ingresos" class="btn-saldo">
+                    <span>💰</span> Ver Saldo / Ingresos
+                </button>
+                <button id="btn-logout" class="btn-logout">
+                    🚪 Salir
+                </button>
+            </div>
+        </div>
+
+        <form id="form-actividad">
+            <div>
+                <label>Fecha Inicio:</label>
+                <input type="date" id="fechaInicio" required>
+            </div>
+            <div>
+                <label>Hora Inicio:</label>
+                <input type="time" id="horaInicio">
+            </div>
+            <div>
+                <label>Fecha Fin:</label>
+                <input type="date" id="fechaFin">
+            </div>
+            <div>
+                <label>Hora Fin:</label>
+                <input type="time" id="horaFin">
+            </div>
+            <div>
+                <label>Monto (S/):</label>
+                <input type="number" id="monto" step="0.01" placeholder="Ej: 50.00" required>
+            </div>
+            <div style="grid-column: 1 / -1;">
+                <label>Descripción / Notas:</label>
+                <input type="text" id="descripcion" placeholder="Ej: Turno noche">
+            </div>
+            <button type="submit">Registrar Actividad</button>
+        </form>
+
+        <div id="calendar"></div>
+    </div>
+
+    <!-- Modal Resumen de Ingresos -->
+    <div id="modal-ingresos" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Resumen de Ingresos</h3>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-info">
+                    <p>Últimos 7 días (Semana)</p>
+                    <span id="monto-semana">S/ 0.00</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-info">
+                    <p id="label-mes">Mes Seleccionado</p>
+                    <span id="monto-mes">S/ 0.00</span>
+                </div>
+            </div>
+
+            <div class="seccion-titulo">📅 Histórico Mes a Mes</div>
+            <div id="lista-meses" class="lista-meses"></div>
+
+            <div class="stat-card total">
+                <div class="stat-info">
+                    <p>En General (Total Histórico)</p>
+                    <span id="monto-total">S/ 0.00</span>
+                </div>
+            </div>
+
+            <button id="btn-cerrar-modal" class="btn-cerrar">Cerrar</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
