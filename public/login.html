@@ -84,27 +84,7 @@
         </form>
     </div>
 
-    <script>
-        document.getElementById('form-login').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const errorEl = document.getElementById('login-error');
-            errorEl.style.display = 'none';
-
-            const res = await fetch('/api/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    username: document.getElementById('username').value,
-                    password: document.getElementById('password').value
-                })
-            });
-
-            if (res.ok) {
-                window.location.href = '/';
-            } else {
-                errorEl.style.display = 'block';
-            }
-        });
-    </script>
+    <!-- Script desacoplado para el Login -->
+    <script src="login.js"></script>
 </body>
 </html>

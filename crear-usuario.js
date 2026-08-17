@@ -9,10 +9,24 @@ const pool = new Pool({
 
 const inicializarBD = async () => {
     try {
-        console.log('Conectando a la base de datos en Render...');
+        console.log('Reconfigurando la base de datos en Render...');
 
-        // 1. Crear las tablas si no existen
+        // 1. Recrear tabla de actividades para limpiar incompatibilidades previas
         await pool.query(`
+            DROP TABLE IF EXISTS actividades CASCADE;
+
+            CREATE TABLE actividades (
+                id SERIAL PRIMARY KEY,
+                user_id INT NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,
+                fecha DATE NOT NULL,
+                fecha_fin DATE,
+                hora_inicio TIME,
+                hora_fin TIME,
+                monto NUMERIC(10, 2) NOT NULL,
+                descripcion TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+
             CREATE TABLE IF NOT EXISTS usuarios (
                 id SERIAL PRIMARY KEY,
                 username VARCHAR(50) UNIQUE NOT NULL,
@@ -20,32 +34,20 @@ const inicializarBD = async () => {
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
 
-            CREATE TABLE IF NOT EXISTS actividades (
-                id VARCHAR(50) PRIMARY KEY,
-                fecha DATE NOT NULL,
-                fecha_fin DATE,
-                hora_inicio VARCHAR(10),
-                hora_fin VARCHAR(10),
-                monto NUMERIC(10, 2) NOT NULL,
-                descripcion TEXT
-            );
-
             CREATE TABLE IF NOT EXISTS "session" (
                 "sid" varchar NOT NULL PRIMARY KEY,
                 "sess" json NOT NULL,
                 "expire" timestamp(6) NOT NULL
             );
+            
             CREATE INDEX IF NOT EXISTS "IDX_session_expire" ON "session" ("expire");
         `);
-        console.log('✅ Tablas creadas/verificadas con éxito.');
 
-        // 2. Definir usuario y la nueva contraseña de prueba
+        // 2. Crear / Actualizar usuario admin
         const usuario = 'admin';
         const passwordPlana = '123456';
-
         const hash = await bcrypt.hash(passwordPlana, 12);
 
-        // Inserta o actualiza la contraseña si el usuario ya existe
         await pool.query(`
             INSERT INTO usuarios (username, password_hash) 
             VALUES ($1, $2) 
@@ -53,7 +55,7 @@ const inicializarBD = async () => {
             DO UPDATE SET password_hash = EXCLUDED.password_hash
         `, [usuario, hash]);
 
-        console.log('✅ Contraseña actualizada a 123456 con éxito.');
+        console.log('✅ Base de datos reseteada con éxito y usuario admin listo.');
 
     } catch (err) {
         console.error('❌ Error al inicializar la base de datos:', err);

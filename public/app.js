@@ -124,6 +124,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const response = await fetch(`/api/actividades/${id}`, { method: 'DELETE' });
         if (response.ok) {
             calendar.refetchEvents();
+        } else {
+            alert('No se pudo eliminar el registro.');
         }
     }
 
